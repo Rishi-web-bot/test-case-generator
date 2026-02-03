@@ -29,67 +29,104 @@
     const generateBtn = document.getElementById("generateBtn");
     const testCaseList = document.getElementById("testCaseList");
 
-    generateBtn.addEventListener("click", function () {
-        const feature = featureInput.value.trim().toLowerCase();
+    let savedTestCases = JSON.parse(localStorage.getItem("testCases")) || [];
+
+    // STEP 3C: Load saved multi-feature test cases
+    window.onload = function () {
         testCaseList.innerHTML = "";
 
-        if (feature === "") {
-            alert("Please enter a feature description");
+        savedTestCases.forEach(function (item) {
+            const heading = document.createElement("h3");
+            heading.textContent = item.feature.toUpperCase();
+            testCaseList.appendChild(heading);
+
+            item.testCases.forEach(function (testCase, index) {
+                const li = document.createElement("li");
+                li.textContent =
+                    "TC_" +
+                    String(index + 1).padStart(2, "0") +
+                    ": " +
+                    testCase;
+                testCaseList.appendChild(li);
+            });
+        });
+    };
+
+    // STEP 3B: Generate multi-feature test cases
+    generateBtn.addEventListener("click", function () {
+        const features = featureInput.value
+            .trim()
+            .toLowerCase()
+            .split("\n");
+
+        testCaseList.innerHTML = "";
+
+        if (features.length === 0 || features[0] === "") {
+            alert("Please enter at least one feature");
             return;
         }
 
-        let testCases = [];
+        let allTestCases = [];
 
-        if (feature.includes("login")) {
-            testCases = [
-                "Verify login with valid credentials",
-                "Verify error message for invalid password",
-                "Verify login with empty fields",
-                "Verify password masking",
-                "Verify account lock after multiple failures"
-            ];
-        } 
-        else if (feature.includes("signup") || feature.includes("register")) {
-            testCases = [
-                "Verify signup with valid details",
-                "Verify error for existing email",
-                "Verify mandatory field validation",
-                "Verify password strength rules",
-                "Verify successful account creation"
-            ];
-        } 
-        else if (feature.includes("search")) {
-            testCases = [
-                "Verify search with valid keyword",
-                "Verify no results message",
-                "Verify partial keyword search",
-                "Verify case-insensitive search",
-                "Verify search performance"
-            ];
-        } 
-        else {
-            testCases = [
-                "Verify feature works with valid input",
-                "Verify error handling for invalid input",
-                "Verify empty input handling",
-                "Verify boundary conditions",
-                "Verify UI response"
-            ];
-        }
+        features.forEach(function (feature) {
+            let testCases = [];
 
-        testCases.forEach(function (testCase, index) {
-            const li = document.createElement("li");
-            li.textContent =
-                "TC_" +
-                String(index + 1).padStart(2, "0") +
-                ": " +
-                testCase;
+            if (feature.includes("login")) {
+                testCases = [
+                    "Verify login with valid credentials",
+                    "Verify error message for invalid password",
+                    "Verify login with empty fields",
+                    "Verify password masking",
+                    "Verify account lock after multiple failures"
+                ];
+            } else if (feature.includes("signup") || feature.includes("register")) {
+                testCases = [
+                    "Verify signup with valid details",
+                    "Verify error for existing email",
+                    "Verify mandatory field validation",
+                    "Verify password strength rules",
+                    "Verify successful account creation"
+                ];
+            } else if (feature.includes("search")) {
+                testCases = [
+                    "Verify search with valid keyword",
+                    "Verify no results message",
+                    "Verify partial keyword search",
+                    "Verify case-insensitive search",
+                    "Verify search performance"
+                ];
+            } else {
+                testCases = [
+                    "Verify feature works with valid input",
+                    "Verify error handling for invalid input",
+                    "Verify empty input handling",
+                    "Verify boundary conditions",
+                    "Verify UI response"
+                ];
+            }
 
-            testCaseList.appendChild(li);
+            // Heading
+            const heading = document.createElement("h3");
+            heading.textContent = feature.toUpperCase();
+            testCaseList.appendChild(heading);
+
+            testCases.forEach(function (testCase, index) {
+                const li = document.createElement("li");
+                li.textContent =
+                    "TC_" +
+                    String(index + 1).padStart(2, "0") +
+                    ": " +
+                    testCase;
+                testCaseList.appendChild(li);
+            });
+
+            allTestCases.push({ feature, testCases });
         });
+
+        savedTestCases = allTestCases;
+        localStorage.setItem("testCases", JSON.stringify(savedTestCases));
     });
 </script>
-
 
 </body>
 </html>
