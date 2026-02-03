@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Case Generator</title>
+</head>
+<body>
+
+    <h1>Test Case Generator</h1>
+
+    <p>Enter feature description:</p>
+
+    <textarea 
+        id="featureInput" 
+        rows="5" 
+        cols="50"
+        placeholder="Example: Login with email and password"
+    ></textarea>
+
+    <br><br>
+
+    <button id="generateBtn">Generate Test Cases</button>
+
+    <h2>Generated Test Cases</h2>
+
+    <ul id="testCaseList"></ul>
+<script>
+    const featureInput = document.getElementById("featureInput");
+    const generateBtn = document.getElementById("generateBtn");
+    const testCaseList = document.getElementById("testCaseList");
+
+    generateBtn.addEventListener("click", function () {
+        const feature = featureInput.value.trim().toLowerCase();
+        testCaseList.innerHTML = "";
+
+        if (feature === "") {
+            alert("Please enter a feature description");
+            return;
+        }
+
+        let testCases = [];
+
+        if (feature.includes("login")) {
+            testCases = [
+                "Verify login with valid credentials",
+                "Verify error message for invalid password",
+                "Verify login with empty fields",
+                "Verify password masking",
+                "Verify account lock after multiple failures"
+            ];
+        } 
+        else if (feature.includes("signup") || feature.includes("register")) {
+            testCases = [
+                "Verify signup with valid details",
+                "Verify error for existing email",
+                "Verify mandatory field validation",
+                "Verify password strength rules",
+                "Verify successful account creation"
+            ];
+        } 
+        else if (feature.includes("search")) {
+            testCases = [
+                "Verify search with valid keyword",
+                "Verify no results message",
+                "Verify partial keyword search",
+                "Verify case-insensitive search",
+                "Verify search performance"
+            ];
+        } 
+        else {
+            testCases = [
+                "Verify feature works with valid input",
+                "Verify error handling for invalid input",
+                "Verify empty input handling",
+                "Verify boundary conditions",
+                "Verify UI response"
+            ];
+        }
+
+        testCases.forEach(function (testCase, index) {
+            const li = document.createElement("li");
+            li.textContent =
+                "TC_" +
+                String(index + 1).padStart(2, "0") +
+                ": " +
+                testCase;
+
+            testCaseList.appendChild(li);
+        });
+    });
+</script>
+
+
+</body>
+</html>
