@@ -3,130 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <title>Test Case Generator</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 10px 5px 10px 0;
+            cursor: pointer;
+        }
+
+        h3 {
+            margin-top: 20px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
 
     <h1>Test Case Generator</h1>
 
-    <p>Enter feature description:</p>
+    <p>Enter feature description (one per line):</p>
 
     <textarea 
         id="featureInput" 
         rows="5" 
-        cols="50"
-        placeholder="Example: Login with email and password"
+        placeholder=""
     ></textarea>
 
-    <br><br>
+    <br>
 
     <button id="generateBtn">Generate Test Cases</button>
+    <button id="copyBtn">Copy Test Cases</button>
 
     <h2>Generated Test Cases</h2>
 
-    <ul id="testCaseList"></ul>
-<script>
-    const featureInput = document.getElementById("featureInput");
-    const generateBtn = document.getElementById("generateBtn");
-    const testCaseList = document.getElementById("testCaseList");
+    <div id="testCaseList"></div>
 
-    let savedTestCases = JSON.parse(localStorage.getItem("testCases")) || [];
+    <script>
+        const featureInput = document.getElementById("featureInput");
+        const generateBtn = document.getElementById("generateBtn");
+        const copyBtn = document.getElementById("copyBtn");
+        const testCaseList = document.getElementById("testCaseList");
 
-    // STEP 3C: Load saved multi-feature test cases
-    window.onload = function () {
-        testCaseList.innerHTML = "";
+        let savedTestCases = JSON.parse(localStorage.getItem("testCases")) || [];
 
-        savedTestCases.forEach(function (item) {
-            const heading = document.createElement("h3");
-            heading.textContent = item.feature.toUpperCase();
-            testCaseList.appendChild(heading);
+        
 
-            item.testCases.forEach(function (testCase, index) {
-                const li = document.createElement("li");
-                li.textContent =
-                    "TC_" +
-                    String(index + 1).padStart(2, "0") +
-                    ": " +
-                    testCase;
-                testCaseList.appendChild(li);
-            });
-        });
-    };
+        // ✅ Generate test cases
+        generateBtn.addEventListener("click", function () {
+            const features = featureInput.value
+                .trim()
+                .toLowerCase()
+                .split("\n")
+                .filter(f => f !== "");
 
-    // STEP 3B: Generate multi-feature test cases
-    generateBtn.addEventListener("click", function () {
-        const features = featureInput.value
-            .trim()
-            .toLowerCase()
-            .split("\n");
-
-        testCaseList.innerHTML = "";
-
-        if (features.length === 0 || features[0] === "") {
-            alert("Please enter at least one feature");
-            return;
-        }
-
-        let allTestCases = [];
-
-        features.forEach(function (feature) {
-            let testCases = [];
-
-            if (feature.includes("login")) {
-                testCases = [
-                    "Verify login with valid credentials",
-                    "Verify error message for invalid password",
-                    "Verify login with empty fields",
-                    "Verify password masking",
-                    "Verify account lock after multiple failures"
-                ];
-            } else if (feature.includes("signup") || feature.includes("register")) {
-                testCases = [
-                    "Verify signup with valid details",
-                    "Verify error for existing email",
-                    "Verify mandatory field validation",
-                    "Verify password strength rules",
-                    "Verify successful account creation"
-                ];
-            } else if (feature.includes("search")) {
-                testCases = [
-                    "Verify search with valid keyword",
-                    "Verify no results message",
-                    "Verify partial keyword search",
-                    "Verify case-insensitive search",
-                    "Verify search performance"
-                ];
-            } else {
-                testCases = [
-                    "Verify feature works with valid input",
-                    "Verify error handling for invalid input",
-                    "Verify empty input handling",
-                    "Verify boundary conditions",
-                    "Verify UI response"
-                ];
+            if (features.length === 0) {
+                alert("Please enter at least one feature");
+                return;
             }
 
-            // Heading
-            const heading = document.createElement("h3");
-            heading.textContent = feature.toUpperCase();
-            testCaseList.appendChild(heading);
+            let allTestCases = [];
 
-            testCases.forEach(function (testCase, index) {
-                const li = document.createElement("li");
-                li.textContent =
-                    "TC_" +
-                    String(index + 1).padStart(2, "0") +
-                    ": " +
-                    testCase;
-                testCaseList.appendChild(li);
+            features.forEach(function (feature) {
+                let testCases = [];
+
+                if (feature.includes("login")) {
+                    testCases = [
+                        "Verify login with valid credentials",
+                        "Verify error message for invalid password",
+                        "Verify login with empty fields",
+                        "Verify password masking",
+                        "Verify account lock after multiple failures"
+                    ];
+                } else if (feature.includes("signup") || feature.includes("register")) {
+                    testCases = [
+                        "Verify signup with valid details",
+                        "Verify error for existing email",
+                        "Verify mandatory field validation",
+                        "Verify password strength rules",
+                        "Verify successful account creation"
+                    ];
+                } else if (feature.includes("search")) {
+                    testCases = [
+                        "Verify search with valid keyword",
+                        "Verify no results message",
+                        "Verify partial keyword search",
+                        "Verify case-insensitive search",
+                        "Verify search performance"
+                    ];
+                } else {
+                    testCases = [
+                        "Verify feature works with valid input",
+                        "Verify error handling for invalid input",
+                        "Verify empty input handling",
+                        "Verify boundary conditions",
+                        "Verify UI response"
+                    ];
+                }
+
+                allTestCases.push({ feature, testCases });
             });
 
-            allTestCases.push({ feature, testCases });
+            savedTestCases = allTestCases;
+            localStorage.setItem("testCases", JSON.stringify(savedTestCases));
+            renderTestCases(savedTestCases);
         });
 
-        savedTestCases = allTestCases;
-        localStorage.setItem("testCases", JSON.stringify(savedTestCases));
-    });
-</script>
+        // ✅ Copy test cases
+        copyBtn.addEventListener("click", function () {
+            if (savedTestCases.length === 0) {
+                alert("No test cases to copy");
+                return;
+            }
+
+            let textToCopy = "";
+
+            savedTestCases.forEach(function (item) {
+                textToCopy += item.feature.toUpperCase() + "\n";
+
+                item.testCases.forEach(function (testCase, index) {
+                    textToCopy +=
+                        "TC_" +
+                        String(index + 1).padStart(2, "0") +
+                        ": " +
+                        testCase +
+                        "\n";
+                });
+
+                textToCopy += "\n";
+            });
+
+            navigator.clipboard.writeText(textToCopy);
+            alert("Test cases copied to clipboard!");
+        });
+
+        // ✅ Render helper function
+        function renderTestCases(data) {
+            testCaseList.innerHTML = "";
+
+            data.forEach(function (item) {
+                const heading = document.createElement("h3");
+                heading.textContent = item.feature.toUpperCase();
+                testCaseList.appendChild(heading);
+
+                const ul = document.createElement("ul");
+
+                item.testCases.forEach(function (testCase, index) {
+                    const li = document.createElement("li");
+                    li.textContent =
+                        "TC_" +
+                        String(index + 1).padStart(2, "0") +
+                        ": " +
+                        testCase;
+                    ul.appendChild(li);
+                });
+
+                testCaseList.appendChild(ul);
+            });
+        }
+    </script>
 
 </body>
 </html>
